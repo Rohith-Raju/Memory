@@ -6,25 +6,30 @@ int MEMORY_SIZE = 100;
 
 class LinearMemory {
 public:
-  void *memory;
+  char *memory;
   unsigned int offset;
-
-  LinearMemory(void *mem) : memory(mem), offset(0) {}
+  LinearMemory(char *mem) : memory(mem), offset(8) {}
 };
 
-template <typename T> bool mount_mmu(void *raw_mem) {
+template <typename T> bool mount_mmu(T, void *raw_mem) {
   int class_size = sizeof(T);
 }
 
 int main() {
-  void *memory = mmap(nullptr, MEMORY_SIZE, PROT_READ | PROT_WRITE,
-                      MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+  char *memory = (char *)mmap(nullptr, MEMORY_SIZE, PROT_READ | PROT_WRITE,
+                              MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 
   if (memory == MAP_FAILED) {
     std::cout << "Map Failed" << std::endl;
   } else {
     std::cout << "Map Succeeded" << std::endl;
   }
+
+  std::cout << "started at: " << memory << std::endl;
+
+  LinearMemory *some = new (memory) LinearMemory(memory + sizeof(LinearMemory));
+
+  std::cout << "currently pointed at: " << memory << std::endl;
 
   int unmapped = munmap(memory, MEMORY_SIZE);
 
