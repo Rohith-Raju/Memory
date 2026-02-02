@@ -2,6 +2,7 @@
 #include <cstddef>
 #include <iostream>
 #include <sys/mman.h>
+#include <unistd.h>
 
 // TODO: Need the next possoble address based on alignment
 std::size_t alignment(std::size_t need, std::size_t multiple) {
@@ -20,9 +21,16 @@ LinearMemory::~LinearMemory() { this->free(); }
 LinearMemory *LinearMemory::init(std::size_t mem_size,
                                  std::size_t default_allignment) {
 
+  std::size_t page_size = (std::size_t)sysconf(_SC_PAGE_SIZE);
+  std::size_t total_need = sizeof(LinearMemory) + mem_size;
+
   std::cout << "Your requested memory size (in bytes): " << mem_size
             << std::endl;
-  std::size_t aligned = alignment(mem_size, default_allignment);
+  std::cout << "Total size needed (LinearMemory + your needs): " << total_need
+            << std::endl;
+  std::cout << "Size of one page on your machine (in bytes): " << page_size
+            << std::endl;
+  std::size_t aligned = alignment(total_need, page_size);
   std::cout << "Memory alligned to (in bytes): " << aligned << std::endl;
 
   // TODO: Get the actual end of the memory. like how much it assinged.
@@ -31,26 +39,35 @@ LinearMemory *LinearMemory::init(std::size_t mem_size,
                         MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 
   std::byte *start = sizeof(LinearMemory) + memory;
+
   return new (memory)
-      LinearMemory(memory, start, start + mem_size, start + aligned);
+      LinearMemory(memory, start, start + mem_size, memory + aligned);
+}
+
+template <typename T> void LinearMemory::assign(T entity) {
+  std::size_t size = sizeof(entity);
+  std::size_t aligned_size = alignment(size, 8);
 }
 
 void LinearMemory::print_stats() {
   std::cout << "Raw memory starting address: " << (void *)memory_start
             << std::endl;
   std::cout << "Linear memory starts from: " << (void *)memory_start
-            << " and ends at" << (void *)current << std::endl;
+            << " and ends at " << (void *)current << std::endl;
 
   std::cout << "Actual sizeof Linear memory: " << sizeof(LinearMemory)
             << std::endl;
   std::cout << "Bytes allocated in memory for LinearMemory: "
             << static_cast<std::size_t>(current - memory_start) << std::endl;
-  std::cout << "soft_end address: " << (void *)soft_end << std::endl;
-  std::cout << "hard_end address: " << (void *)hard_end << std::endl;
+  std::cout << "Difference between hard_end and soft_end(in bytes): "
+            << (hard_end - soft_end);
 }
 
+// TODO: figure out how to save all the address that are assigned do you need
+// it? if yes use an array
 template <typename T> void *assign(T obj) {
   std::size_t class_size = sizeof(T);
+  std::size_t alligned_size = alignment(class_size, 8);
 }
 
 bool LinearMemory::free() {

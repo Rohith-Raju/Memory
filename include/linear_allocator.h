@@ -15,7 +15,7 @@ public:
   static LinearMemory *init(std::size_t mem_size,
                             std::size_t allignment = sizeof(std::max_align_t));
 
-  template <typename T> void *assign(T obj);
+  template <typename T> void assign(T);
 
   void print_stats();
 
