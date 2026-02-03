@@ -1,5 +1,6 @@
 #include "linear_allocator.h"
 #include <cstddef>
+#include <cstdint>
 #include <iostream>
 #include <sys/mman.h>
 #include <unistd.h>
@@ -44,11 +45,6 @@ LinearMemory *LinearMemory::init(std::size_t mem_size,
       LinearMemory(memory, start, start + mem_size, memory + aligned);
 }
 
-template <typename T> void LinearMemory::assign(T entity) {
-  std::size_t size = sizeof(entity);
-  std::size_t aligned_size = alignment(size, 8);
-}
-
 void LinearMemory::print_stats() {
   std::cout << "Raw memory starting address: " << (void *)memory_start
             << std::endl;
@@ -63,11 +59,14 @@ void LinearMemory::print_stats() {
             << (hard_end - soft_end);
 }
 
-// TODO: figure out how to save all the address that are assigned do you need
-// it? if yes use an array
-template <typename T> void *assign(T obj) {
-  std::size_t class_size = sizeof(T);
-  std::size_t alligned_size = alignment(class_size, 8);
+// Todo:: also model memory access, the way memory is accessed when the pointer
+// is dereferenced.
+template <typename T> void LinearMemory::assign(T obj) {
+  std::size_t size = sizeof(T);
+  std::size_t req = alignof(T);
+
+  uintptr_t base_addr = (uintptr_t)current;
+  std::size_t alligned_size = alignment(current + class_size, 8);
 }
 
 bool LinearMemory::free() {
