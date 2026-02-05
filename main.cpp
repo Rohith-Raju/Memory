@@ -1,8 +1,15 @@
-#include <iostream>
 #include <linear_allocator.h>
 
-int main() {
+class Entity {
+public:
+  Entity(int a, int b) : a{a}, b{b} {};
 
+private:
+  int a;
+  int b;
+};
+
+int main() {
   auto mem = LinearMemory::init(20000);
-  mem->print_stats();
+  mem->assign<Entity>(10, 20);
 }

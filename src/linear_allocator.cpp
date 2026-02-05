@@ -59,14 +59,16 @@ void LinearMemory::print_stats() {
             << (hard_end - soft_end);
 }
 
-// Todo:: also model memory access, the way memory is accessed when the pointer
-// is dereferenced.
-template <typename T> void LinearMemory::assign(T obj) {
+template <typename T, typename... Args>
+void *LinearMemory::assign(Args... args) {
   std::size_t size = sizeof(T);
   std::size_t req = alignof(T);
 
-  uintptr_t base_addr = (uintptr_t)current;
-  std::size_t alligned_size = alignment(current + class_size, 8);
+  uintptr_t curr_addr = (uintptr_t)current;
+  uintptr_t aligned_addr = alignment(curr_addr, sizeof(std::max_align_t));
+
+  current = (std::byte *)(aligned_addr + size);
+  return new (aligned_addr) T(args...);
 }
 
 bool LinearMemory::free() {
