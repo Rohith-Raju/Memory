@@ -1,4 +1,12 @@
+#ifndef LINEAR
+#define LINEAR
+
+#include "utils.h"
 #include <cstddef>
+#include <cstdint>
+#include <iostream>
+#include <new>
+#include <util.h>
 
 class LinearMemory {
 private:
@@ -15,9 +23,27 @@ public:
   static LinearMemory *init(std::size_t mem_size,
                             std::size_t allignment = sizeof(std::max_align_t));
 
-  template <typename T, typename... Args> void *assign(Args...);
+  template <typename T, typename... Args> T *assign(Args... args) {
+
+    std::size_t size = sizeof(T);
+    std::size_t req = alignof(T);
+
+    uintptr_t curr_addr = (uintptr_t)current;
+    uintptr_t aligned_addr = Utils::alignment(curr_addr, req);
+
+    if ((std::byte *)aligned_addr + size > hard_end) {
+      std::cerr << "Out of memory!" << std::endl;
+      return nullptr;
+    }
+
+    current = (std::byte *)(aligned_addr + size);
+
+    std::cout << "still here" << std::endl;
+    return new ((void *)aligned_addr) T(args...);
+  }
 
   void print_stats();
 
   bool free();
 };
+#endif // LINEAR

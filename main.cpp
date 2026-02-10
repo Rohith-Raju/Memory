@@ -11,5 +11,5 @@ private:
 
 int main() {
   auto mem = LinearMemory::init(20000);
-  mem->assign<Entity>(10, 20);
+  Entity *enty = mem->assign<Entity>(10, 20);
 }
