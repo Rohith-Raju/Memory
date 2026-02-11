@@ -31,14 +31,14 @@ public:
     uintptr_t curr_addr = (uintptr_t)current;
     uintptr_t aligned_addr = Utils::alignment(curr_addr, req);
 
-    if ((std::byte *)aligned_addr + size > hard_end) {
+    if ((std::byte *)aligned_addr + size > soft_end) {
       std::cerr << "Out of memory!" << std::endl;
-      return nullptr;
+      std::cerr << "Memory Wasted: " << hard_end - soft_end << std::endl;
+      exit(1);
     }
 
     current = (std::byte *)(aligned_addr + size);
 
-    std::cout << "still here" << std::endl;
     return new ((void *)aligned_addr) T(args...);
   }
 
