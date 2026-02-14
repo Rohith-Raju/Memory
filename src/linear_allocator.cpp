@@ -20,7 +20,8 @@ LinearMemory *LinearMemory::init(std::size_t mem_size,
 
   std::cout << "Your requested memory size (in bytes): " << mem_size
             << std::endl;
-  std::cout << "Total size needed (LinearMemory + your needs): " << total_need
+  std::cout << "Total size needed (LinearMemory + your needs): "
+            << sizeof(LinearMemory) << " + " << mem_size << " = " << total_need
             << std::endl;
   std::cout << "Size of one page on your machine (in bytes): " << page_size
             << std::endl;
@@ -42,7 +43,6 @@ void LinearMemory::print_stats() {
             << std::endl;
   std::cout << "Linear memory starts from: " << (void *)memory_start
             << " and ends at " << (void *)current << std::endl;
-
   std::cout << "Actual sizeof Linear memory: " << sizeof(LinearMemory)
             << std::endl;
   std::cout << "Bytes allocated in memory for LinearMemory: "

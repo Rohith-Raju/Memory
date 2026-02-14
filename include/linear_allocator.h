@@ -5,8 +5,6 @@
 #include <cstddef>
 #include <cstdint>
 #include <iostream>
-#include <new>
-#include <util.h>
 
 class LinearMemory {
 private:
