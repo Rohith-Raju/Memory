@@ -6,14 +6,14 @@
 
 class PoolMemory {
 private:
-  size_t block_size;
-  void *start_memory;
-  void *free_list;
-  PoolMemory(size_t);
+  std::byte *start_memory;
+  std::byte *current;
+  std::byte *free_list;
+  PoolMemory(std::byte *, std::byte *, std::byte *);
   ~PoolMemory();
 
 public:
-  static PoolMemory *init(size_t, uint8_t);
+  static PoolMemory *init(size_t = 1024 * 1024, uint8_t = 64);
 
   template <typename T, typename... Args> T *assign(Args... args);
 
