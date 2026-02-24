@@ -4,12 +4,14 @@
 #include <cstddef>
 #include <cstdint>
 
+struct FreeNode {
+  std::byte *next;
+};
 class PoolMemory {
 private:
   std::byte *start_memory;
-  std::byte *current;
   std::byte *free_list;
-  PoolMemory(std::byte *, std::byte *, std::byte *);
+  PoolMemory(std::byte *, std::byte *);
   ~PoolMemory();
 
 public:

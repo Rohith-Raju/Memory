@@ -2,9 +2,8 @@
 #include <iostream>
 #include <sys/mman.h>
 
-PoolMemory::PoolMemory(std::byte *start_memory, std::byte *current,
-                       std::byte *free_list)
-    : start_memory(start_memory), current(current), free_list(free_list) {}
+PoolMemory::PoolMemory(std::byte *start_memory, std::byte *free_list)
+    : start_memory(start_memory), free_list(free_list) {}
 
 PoolMemory *PoolMemory::init(size_t mem_size, uint8_t block_nums) {
   int remainder = mem_size % block_nums;
@@ -21,8 +20,13 @@ PoolMemory *PoolMemory::init(size_t mem_size, uint8_t block_nums) {
       (std::byte *)mmap(nullptr, mem_size + remainder, PROT_READ | PROT_WRITE,
                         MAP_PRIVATE | MAP_ANON, -1, 0);
 
-  std::byte *start = memory + sizeof(mem_size);
-
-  for (int i = 0; i < block_size; i++) {
+  std::byte *start = memory + sizeof(PoolMemory);
+  std::byte *head = start;
+  std::byte *current = start;
+  for (int i = 0; i < block_nums; i++) {
+    std::byte *addr = head + (i * block_size);
+    new (current) FreeNode{addr};
+    current = addr;
   }
+  return new (PoolMemory)(start, head);
 }
