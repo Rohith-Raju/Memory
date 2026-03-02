@@ -4,7 +4,7 @@
 
 class Entity {
 public:
-  Entity(int a, int b) : a{a}, b{b} {};
+  Entity(int a, int b, int c) : a{a}, b{b}, c{c} {};
   void printEntity() {
     std::cout << "Value of a and b are :" << a << " " << b << std::endl;
   }
@@ -12,10 +12,11 @@ public:
 private:
   int a;
   int b;
+  int c;
 };
 
 int main() {
-  auto mem = LinearMemory::init(5);
-  Entity *entity = mem->assign<Entity>(10, 20);
+  auto mem = LinearMemory::init(100);
+  Entity *entity = mem->assign<Entity>(10, 20, 30);
   mem->print_stats();
 }

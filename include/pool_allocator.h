@@ -10,8 +10,8 @@ struct FreeNode {
 class PoolMemory {
 private:
   std::byte *start_memory;
-  std::byte *free_list;
-  PoolMemory(std::byte *, std::byte *);
+  FreeNode *free_list;
+  PoolMemory(std::byte *, FreeNode *);
   ~PoolMemory();
 
 public:

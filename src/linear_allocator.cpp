@@ -43,8 +43,10 @@ void LinearMemory::print_stats() {
             << std::endl;
   std::cout << "Linear memory starts from: " << (void *)memory_start
             << " and ends at " << (void *)current << std::endl;
-  std::cout << "Actual sizeof Linear memory: " << sizeof(LinearMemory)
-            << std::endl;
+  std::cout << "Actual size of Linear memory without alignment: "
+            << sizeof(LinearMemory) << std::endl;
+  std::cout << "Actual size of Linear memory with allignment"
+            << alignof(LinearMemory) << std::endl;
   std::cout << "Bytes allocated in memory for LinearMemory: "
             << static_cast<std::size_t>(current - memory_start) << std::endl;
   std::cout << "Difference between hard_end and soft_end(in bytes): "
