@@ -1,43 +1,41 @@
 #include "pool_allocator.h"
+#include <algorithm>
+#include <cstring>
 #include <iostream>
 #include <sys/mman.h>
 
 PoolMemory::PoolMemory(std::byte *start_memory, FreeNode *free_list)
     : start_memory(start_memory), free_list(free_list) {}
 
-PoolMemory *PoolMemory::init(size_t mem_size, uint8_t block_nums) {
-  int remainder = mem_size % block_nums;
-  size_t block_size = (mem_size + remainder) / block_nums;
+PoolMemory *PoolMemory::init(size_t blocks, uint8_t size_per_block) {
+  size_t actual_block_size =
+      std::max((size_t)sizeof(FreeNode), (size_t)size_per_block);
+  actual_block_size = (actual_block_size + 7) & ~7;
 
-  std::size_t total_need = sizeof(PoolMemory) + mem_size;
-  std::cout << "Your requested memory size (in bytes): " << mem_size
-            << std::endl;
-  std::cout << "Total size needed (LinearMemory + your needs): "
-            << sizeof(PoolMemory) << " + " << mem_size << " = " << total_need
-            << std::endl;
+  std::size_t total_data_size = blocks * actual_block_size;
+
+  std::size_t total_need = sizeof(PoolMemory) + total_data_size;
 
   std::byte *memory =
-      (std::byte *)mmap(nullptr, mem_size + remainder, PROT_READ | PROT_WRITE,
+      (std::byte *)mmap(nullptr, total_data_size, PROT_READ | PROT_WRITE,
                         MAP_PRIVATE | MAP_ANON, -1, 0);
 
   std::byte *start = memory + sizeof(PoolMemory);
   std::byte *head = start;
   std::byte *current = start;
-  for (int i = 1; i < block_nums; i++) {
-    std::byte *addr = head + (i * block_size);
+  for (int i = 1; i < size_per_block; i++) {
+    std::byte *addr = head + (i * actual_block_size);
     new (current) FreeNode{addr};
     current = addr;
   }
 
-  std::byte *last_ptr = current - block_size;
+  std::byte *last_ptr = current - actual_block_size;
   FreeNode *last = (FreeNode *)last_ptr;
   last->next = nullptr;
-  return new (PoolMemory)(start, (FreeNode *)head);
+  return new (memory) PoolMemory(start, (FreeNode *)head);
 }
 
 void PoolMemory::print_stats() {
-  FreeNode *curr = free_list;
-
-  // * difference = std::byte
-  // std::cout<<"Distance between head and the next pointer is : "<<
+  std::cout << "Size of one block : " << free_list->next - start_memory
+            << std::endl;
 }

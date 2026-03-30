@@ -1,6 +1,6 @@
 #include <cstddef>
 #include <iostream>
-#include <linear_allocator.h>
+#include <pool_allocator.h>
 
 class Entity {
 public:
@@ -16,7 +16,6 @@ private:
 };
 
 int main() {
-  auto mem = LinearMemory::init(100);
-  Entity *entity = mem->assign<Entity>(10, 20, 30);
-  mem->print_stats();
+  PoolMemory *pool = PoolMemory::init(100);
+  pool->print_stats();
 }

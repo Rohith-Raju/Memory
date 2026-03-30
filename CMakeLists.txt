@@ -10,6 +10,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
 
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE 
 	src/linear_allocator.cpp
+  src/pool_allocator.cpp
 )
 
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE include)
