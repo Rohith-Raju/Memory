@@ -1,5 +1,6 @@
 #include "pool_allocator.h"
 #include <algorithm>
+#include <cstdint>
 #include <cstring>
 #include <iostream>
 #include <sys/mman.h>
