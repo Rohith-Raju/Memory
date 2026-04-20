@@ -1,12 +1,15 @@
 #include "pool_allocator.h"
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
 #include <cstring>
 #include <iostream>
 #include <sys/mman.h>
 
-PoolMemory::PoolMemory(std::byte *start_memory, FreeNode *free_list)
-    : start_memory(start_memory), free_list(free_list) {}
+PoolMemory::PoolMemory(std::byte *start_memory, FreeNode *free_list,
+                       size_t actual_block_size)
+    : start_memory{start_memory}, free_list{free_list},
+      actual_block_size{actual_block_size} {}
 
 PoolMemory *PoolMemory::init(size_t blocks, uint8_t size_per_block) {
   size_t actual_block_size =
@@ -33,7 +36,7 @@ PoolMemory *PoolMemory::init(size_t blocks, uint8_t size_per_block) {
   std::byte *last_ptr = current - actual_block_size;
   FreeNode *last = (FreeNode *)last_ptr;
   last->next = nullptr;
-  return new (memory) PoolMemory(start, (FreeNode *)head);
+  return new (memory) PoolMemory(start, (FreeNode *)head, actual_block_size);
 }
 
 void PoolMemory::print_stats() {
