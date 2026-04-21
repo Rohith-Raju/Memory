@@ -6,7 +6,7 @@
 #include <iostream>
 
 struct FreeNode {
-  std::byte *next;
+  FreeNode *next;
 };
 class PoolMemory {
 private:
@@ -19,11 +19,13 @@ private:
 public:
   static PoolMemory *init(size_t = 1024 * 1024, uint8_t = 64);
 
-  template <typename T, typename... Args>
-  T PoolMemory::*assign(T entity, Args... args) {
-    uint8_t block_size = free_list->next - start_memory;
-    if (sizeof(entity) > actual_block_size)
+  template <typename Entity, typename... Args>
+  Entity *PoolMemory::*asign(Args... args) {
+    if (sizeof(Entity) > actual_block_size)
       std::cout << "Entity bigger than block size";
+    FreeNode *node = free_list;
+    free_list = free_list->next;
+    return new (node) Entity(args...);
   }
   void print_stats();
 

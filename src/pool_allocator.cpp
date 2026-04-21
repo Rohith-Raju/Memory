@@ -29,7 +29,7 @@ PoolMemory *PoolMemory::init(size_t blocks, uint8_t size_per_block) {
   std::byte *current = start;
   for (int i = 1; i < size_per_block; i++) {
     std::byte *addr = head + (i * actual_block_size);
-    new (current) FreeNode{addr};
+    new (current) FreeNode{reinterpret_cast<FreeNode *>(addr)};
     current = addr;
   }
 
@@ -40,6 +40,7 @@ PoolMemory *PoolMemory::init(size_t blocks, uint8_t size_per_block) {
 }
 
 void PoolMemory::print_stats() {
-  std::cout << "Size of one block : " << free_list->next - start_memory
+  std::cout << "Size of one block : "
+            << reinterpret_cast<std::byte *>(free_list->next) - start_memory
             << std::endl;
 }
