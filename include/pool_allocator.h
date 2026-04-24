@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <cstdlib>
 #include <iostream>
 
 struct FreeNode {
@@ -19,17 +20,23 @@ private:
 public:
   static PoolMemory *init(size_t = 1024 * 1024, uint8_t = 64);
 
-  template <typename Entity, typename... Args>
-  Entity *PoolMemory::*asign(Args... args) {
-    if (sizeof(Entity) > actual_block_size)
-      std::cout << "Entity bigger than block size";
+  template <typename Entity, typename... Args> Entity *assign(Args... args) {
+    if (sizeof(Entity) > actual_block_size) {
+      std::cout << "Entity bigger than block size exiting...";
+      exit(1);
+    }
     FreeNode *node = free_list;
     free_list = free_list->next;
-    return new (node) Entity(args...);
+    return new ((void *)node) Entity(args...);
   }
   void print_stats();
 
-  bool free();
+  template <typename T> void free(T *ptr) {
+    delete ptr;
+    FreeNode *reclaimed = reinterpret_cast<FreeNode *>(ptr);
+    reclaimed->next = free_list;
+    free_list = reclaimed;
+  }
 };
 
 #endif // POOL

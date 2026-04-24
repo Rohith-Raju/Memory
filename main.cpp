@@ -6,7 +6,8 @@ class Entity {
 public:
   Entity(int a, int b, int c) : a{a}, b{b}, c{c} {};
   void printEntity() {
-    std::cout << "Value of a and b are :" << a << " " << b << std::endl;
+    std::cout << "Value of a and b are :" << a << " " << b << " " << c
+              << std::endl;
   }
 
 private:
@@ -17,5 +18,6 @@ private:
 
 int main() {
   PoolMemory *pool = PoolMemory::init(100);
-  pool->print_stats();
+  Entity *entity = pool->assign<Entity>(1, 2, 4);
+  entity->printEntity();
 }
