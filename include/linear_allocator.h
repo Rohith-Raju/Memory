@@ -8,18 +8,21 @@
 
 class LinearMemory {
 private:
-  std::byte *memory_start;
+  std::byte *map_base_;
+  std::size_t map_bytes_;
+  std::byte *bump_start_;
   std::byte *current;
   std::byte *soft_end;
   std::byte *hard_end;
-  LinearMemory(std::byte *memory_start, std::byte *current, std::byte *soft_end,
-               std::byte *hard_end);
-
-  ~LinearMemory();
+  bool released_;
+  LinearMemory(std::byte *map_base, std::size_t map_bytes, std::byte *bump_start,
+               std::byte *current, std::byte *soft_end, std::byte *hard_end);
 
 public:
+  ~LinearMemory();
+
   static LinearMemory *init(std::size_t mem_size,
-                            std::size_t allignment = sizeof(std::max_align_t));
+                            std::size_t alignment = sizeof(std::max_align_t));
 
   template <typename T, typename... Args> T *assign(Args... args) {
 

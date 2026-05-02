@@ -20,4 +20,6 @@ int main() {
   PoolMemory *pool = PoolMemory::init(100);
   Entity *entity = pool->assign<Entity>(1, 2, 4);
   entity->printEntity();
+  pool->free(entity);
+  delete pool;
 }
