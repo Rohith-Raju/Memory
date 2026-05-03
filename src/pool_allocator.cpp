@@ -14,9 +14,10 @@
 #endif
 
 PoolMemory::PoolMemory(FreeNode *free_list, size_t actual_block_size,
-                       std::byte *map_base, std::size_t map_bytes)
+                       std::byte *map_base, std::size_t block_nums,
+                       std::size_t map_bytes)
     : free_list{free_list}, actual_block_size{actual_block_size},
-      map_base_{map_base}, map_bytes_{map_bytes} {}
+      map_base_{map_base}, block_nums(block_nums), map_bytes_{map_bytes} {}
 
 PoolMemory::~PoolMemory() {
   if (map_base_ && map_bytes_) {
@@ -55,7 +56,8 @@ PoolMemory *PoolMemory::init(size_t blocks, uint8_t size_per_block) {
   new (last_block) FreeNode{nullptr};
 
   try {
-    return new PoolMemory(free_head, actual_block_size, arena, map_bytes);
+    return new PoolMemory(free_head, actual_block_size, arena, blocks,
+                          map_bytes);
   } catch (...) {
     munmap(arena, map_bytes);
     throw;

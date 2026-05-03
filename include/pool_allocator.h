@@ -16,13 +16,18 @@ private:
   size_t actual_block_size;
   std::byte *map_base_;
   std::size_t map_bytes_;
+  std::size_t block_nums;
   PoolMemory(FreeNode *free_list, std::size_t actual_block_size,
-             std::byte *map_base, std::size_t map_bytes);
+             std::byte *map_base, std::size_t block_nums,
+             std::size_t map_bytes);
 
 public:
   ~PoolMemory();
 
-  static PoolMemory *init(size_t = 1024, uint8_t = 64);
+  // thoughts about reassigning
+  // just need to add more mmeory to the free list and append it
+  // unlike mallcoc or other you don't need to create a larger arena and copy it
+  static PoolMemory *init(size_t = 1024 * 1024, uint8_t = 64);
 
   template <typename Entity, typename... Args> Entity *assign(Args... args) {
     if (sizeof(Entity) > actual_block_size) {
@@ -30,6 +35,7 @@ public:
       throw std::length_error("PoolMemory::assign: type larger than block");
     }
     if (!free_list) {
+      std::cerr << "Ran out of memeory";
       throw std::bad_alloc();
     }
     FreeNode *node = free_list;

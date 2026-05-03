@@ -17,8 +17,9 @@ private:
 };
 
 int main() {
-  PoolMemory *pool = PoolMemory::init(100);
+  PoolMemory *pool = PoolMemory::init(1);
   Entity *entity = pool->assign<Entity>(1, 2, 4);
+  Entity *entity1 = pool->assign<Entity>(1, 3, 4);
   entity->printEntity();
   pool->free(entity);
   delete pool;
