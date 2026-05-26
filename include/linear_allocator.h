@@ -5,6 +5,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <iostream>
+#include <new>
 
 class LinearMemory {
 private:
@@ -33,9 +34,7 @@ public:
     uintptr_t aligned_addr = Utils::alignment(curr_addr, req);
 
     if ((std::byte *)aligned_addr + size > soft_end) {
-      std::cerr << "Out of memory!" << std::endl;
-      std::cerr << "Memory Wasted: " << hard_end - soft_end << std::endl;
-      exit(1);
+      throw std::bad_alloc();
     }
 
     current = (std::byte *)(aligned_addr + size);
