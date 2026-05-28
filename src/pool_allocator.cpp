@@ -47,7 +47,7 @@ PoolMemory *PoolMemory::init(size_t blocks, uint8_t size_per_block) {
   auto *arena = static_cast<std::byte *>(raw);
 
   FreeNode *free_head = reinterpret_cast<FreeNode *>(arena);
-  for (std::size_t i = 0; i <= blocks; ++i) {
+  for (std::size_t i = 0; i < blocks - 1; ++i) {
     std::byte *block = arena + i * actual_block_size;
     std::byte *next_block = arena + (i + 1) * actual_block_size;
     new (block) FreeNode{reinterpret_cast<FreeNode *>(next_block)};
